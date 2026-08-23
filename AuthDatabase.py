@@ -16,6 +16,18 @@ def main():
         username = input('username: ')
         password = input('password: ')
         
+        if usernameValidator(username) is True:
+            con = sqlite3.connect('users.db')
+            cur = con.cursor()
+            match = cur.execute('SELECT username FROM users WHERE username = ?', (username,))
+
+            if match.fetchall() is None:
+                password = pwHasher(password)
+                database(username, password)
+                print(f'Registration Sucessful\nWelcome {username}')
+            else:
+                print('User already exists')
+
 
 
 def usernameValidator(username):
