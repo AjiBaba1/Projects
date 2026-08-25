@@ -1,34 +1,45 @@
 import sqlite3, re, bcrypt
 
 def main():
-    user = None
-    while user != 1 and user != 2:
+     while True:
         try:
-            user = int(input('--- HELLO ---\n(Input 1 or 2)\n1. Login\n2. Sign up\n'))
+            user = int(input('\n--- HELLO ---\n(Input 1 or 2)\n1. Login\n2. Sign up\n'))
         except ValueError:
             continue
-    if user == 1:
-        username = input('username: ')
-        password = input('password: ')
+
+        if user == 1:
+            username = input('username: ')
+            password = input('password: ')
 
 
-    else:
-        username = input('username: ')
-        password = input('password: ')
-        
-        if usernameValidator(username) is True:
-            con = sqlite3.connect('users.db')
-            cur = con.cursor()
-            match = cur.execute('SELECT username FROM users WHERE username = ?', (username,))
+        elif user == 2:
+            username = input('username: ')
+            password = input('password: ')
 
-            if match.fetchall() is None:
-                password = pwHasher(password)
-                database(username, password)
-                print(f'Registration Sucessful\nWelcome {username}')
+            if usernameValidator(username) is True:
+                try:
+                    if dbMatch(username) is None:
+                        password = pwHasher(password)
+                        dbStore(username, password)
+                        print(f'\nRegistration Sucessful\nWelcome {username}')
+                        break
+                    else:
+                        print('\nUser already exists')
+                except sqlite3.OperationalError:
+                    password = pwHasher(password)
+                    dbStore(username, password)
+                    print(f'\nRegistration Sucessful\nWelcome {username}')
+                    break                    
+
             else:
-                print('User already exists')
+                if (username.startswith('_') or username.startswith('.')) or (username.endswith('_') or username.endswith('.')):
+                    print('\nInvalid username: Cannot begin or end with special characters')
 
+                elif ('__') in username or ('..') in username or ('._') in username or ('_.') in username:
+                    print('\nInvalid username: Cannot contain consecutive special characters')
 
+                else:
+                    print('\nInvalid username: Can ONLY contain Alphabets, Numbers, and periods/underscores')
 
 def usernameValidator(username):
 # Must start/end with Alphabets, can contain periods/underscores only in between.
@@ -38,7 +49,13 @@ def usernameValidator(username):
     else:
         return False
 
-def database(username, password):
+def dbMatch(username):
+    con = sqlite3.connect('users.db')
+    cur = con.cursor()
+    match = cur.execute('SELECT username FROM users WHERE username = ?', (username,))
+    return match.fetchall()
+
+def dbStore(username, password):
     con = sqlite3.connect('users.db')
     cur = con.cursor()
     cur.execute('CREATE TABLE IF NOT EXISTS users(username, password)')
