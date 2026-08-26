@@ -24,7 +24,7 @@ def main():
                         exit(f'\nRegistration Sucessful\nWelcome {username}')
                     else:
                         print('\nUser already exists')
-                        print(dbMatch(username))
+                #For first user
                 except sqlite3.OperationalError:
                     password = pwHasher(password)
                     dbStore(username, password)
@@ -35,7 +35,7 @@ def main():
 
                 elif ('__') in username or ('..') in username or ('._') in username or ('_.') in username:
                     print('\nInvalid username: Cannot contain consecutive special characters')
-
+                    
                 else:
                     print('\nInvalid username: Can ONLY contain Alphabets, Numbers, and periods/underscores')
 
