@@ -18,19 +18,17 @@ def main():
 
             if usernameValidator(username) is True:
                 try:
-                    if dbMatch(username) is None:
+                    if dbMatch(username) == []:
                         password = pwHasher(password)
                         dbStore(username, password)
-                        print(f'\nRegistration Sucessful\nWelcome {username}')
-                        break
+                        exit(f'\nRegistration Sucessful\nWelcome {username}')
                     else:
                         print('\nUser already exists')
+                        print(dbMatch(username))
                 except sqlite3.OperationalError:
                     password = pwHasher(password)
                     dbStore(username, password)
-                    print(f'\nRegistration Sucessful\nWelcome {username}')
-                    break                    
-
+                    exit(f'\nRegistration Sucessful\nWelcome {username}')
             else:
                 if (username.startswith('_') or username.startswith('.')) or (username.endswith('_') or username.endswith('.')):
                     print('\nInvalid username: Cannot begin or end with special characters')
