@@ -59,7 +59,7 @@ def usernameValidator(username):
 
 def pwValidator(password):
     # 8 chars min, must contain at least one alphabet and numeric char
-    if pattern:= re.search(r'(?=.*[a-zA-Z]+)(?=.*[0-9]+).{8,}', password):
+    if pattern:= re.search(r'^(?=.*[a-zA-Z]+)(?=.*[0-9]+).{8,}$', password):
         return True
     else:
         return False
