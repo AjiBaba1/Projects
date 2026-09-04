@@ -24,18 +24,21 @@ def main():
             password = input('password: ')
 
             if usernameValidator(username) is True:
-                try:
-                    if dbMatch(username) is None:
+                if pwValidator(password) is True:
+                    try:
+                        if dbMatch(username) is None:
+                            password = pwHasher(password)
+                            dbStore(username, password)
+                            exit(f'\nRegistration Sucessful\nWelcome {username}')
+                        else:
+                            print('\nUser already exists')
+                    #For first user
+                    except sqlite3.OperationalError:
                         password = pwHasher(password)
                         dbStore(username, password)
                         exit(f'\nRegistration Sucessful\nWelcome {username}')
-                    else:
-                        print('\nUser already exists')
-                #For first user
-                except sqlite3.OperationalError:
-                    password = pwHasher(password)
-                    dbStore(username, password)
-                    exit(f'\nRegistration Sucessful\nWelcome {username}')
+                else:
+                    print('\nPassword must be a minimum of 8 characters, and must contain at least 1 alphabet and 1 number')
             else:
                 if (username.startswith('_') or username.startswith('.')) or (username.endswith('_') or username.endswith('.')):
                     print('\nInvalid username: Cannot begin or end with special characters')
@@ -49,7 +52,14 @@ def main():
 def usernameValidator(username):
 # Must start/end with Alphabets, can contain periods/underscores only in between.
 # Alphabets are compulsory and must be a minmum of three. Min 3 chars, max 20.
-    if pattern:= re.search(r'^(?=.{3,20}$)(?=([a-zA-Z][_.]?){3,})[a-zA-Z0-9]+([_.][a-zA-Z0-9]+)*$', username):
+    if pattern:= re.search(r'^(?=.{3,20}$)(?=([0-9]*[a-zA-Z][_.0-9]*){3,})[a-zA-Z0-9]+([_.][a-zA-Z0-9]+)*$', username):
+        return True
+    else:
+        return False
+
+def pwValidator(password):
+    # 8 chars min, must contain at least one alphabet and numeric char
+    if pattern:= re.search(r'(?=.*[a-zA-Z]+)(?=.*[0-9]+).{8,}', password):
         return True
     else:
         return False
